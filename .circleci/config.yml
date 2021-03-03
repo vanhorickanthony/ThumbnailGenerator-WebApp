@@ -31,9 +31,10 @@ workflows:
           type: approval
           requires:
             - build
-      - deploy:
+      - eb/deploy:
           <<: *deployment
           context:
             - Production
+          environment-name: thumbnail-generator
           requires:
             - RequestApproval
