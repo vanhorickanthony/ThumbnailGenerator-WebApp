@@ -2,12 +2,13 @@
  * The base router sends all regular traffic (non-API traffic) to the frontend, which is build to public.
  */
 const router = require('express').Router();
+const path = require('path');
 
 router.get(
     '**',
     function(req, res, next)
     {
-        res.redirect('/api/health');
+        res.sendFile(path.join(__dirname, '../public/index.html'));
     });
 
 /**

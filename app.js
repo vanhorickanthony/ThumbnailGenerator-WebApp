@@ -15,6 +15,11 @@ const routes = require('./routes/index');
 const app = express();
 
 /**
+ * Set angular frontend as static path.
+ */
+app.use(express.static(path.join(__dirname, '/public')));
+
+/**
  * Configure application settings etc.
  */
 app.use(logger('dev'));
