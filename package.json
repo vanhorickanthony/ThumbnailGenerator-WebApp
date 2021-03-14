@@ -6,11 +6,11 @@
 		"start": "node ./bin/www",
 		"build": "cd ./frontend && ng build && cd .."
 	},
-	"engines":
-	{
+	"engines": {
 		"node": "14.16.0"
 	},
 	"dependencies": {
+		"@angular/core": "^11.2.5",
 		"cors": "^2.8.5",
 		"debug": "^4.3.1",
 		"express": "^4.17.1",
