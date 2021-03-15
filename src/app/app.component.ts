@@ -1,8 +1,10 @@
 import {Component, ElementRef, ViewChild} from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormArray, Validators } from '@angular/forms';
-
+import * as _ from 'lodash'
 
 import { ApiService } from './services/api.service';
+
+import { IBucketList } from './models/API/bucket_list.model';
 
 @Component(
 	{
@@ -14,9 +16,13 @@ import { ApiService } from './services/api.service';
 
 export class AppComponent
 {
+	lodash = _;
+
 	title = 'ThumbnailGen';
 
 	@ViewChild('imageUploadLabel') imageUploadLabel: ElementRef;
+
+	thumbnailList: IBucketList = null;
 
 	uploadForm = this.FB.group(
 		{
@@ -28,7 +34,32 @@ export class AppComponent
 
 	constructor(private ApiSrv: ApiService, private FB: FormBuilder)
 	{
+		this.ApiSrv.getListSignedUrl$().subscribe(
+			signedUrl =>
+			{
+				console.log(
+					{
+						msg: 'Successfully retrieved signed URL for listing.',
+						result: signedUrl,
+					}
+				)
 
+				this.ApiSrv.listObjects$(signedUrl).subscribe(
+					objectList =>
+					{
+						console.log(
+							{
+								msg: 'Successfully retrieved objects.',
+								result: objectList.ListBucketResult,
+							}
+						)
+
+						this.thumbnailList = objectList.ListBucketResult;
+					}
+				)
+
+			}
+		)
 	}
 
 
@@ -48,7 +79,7 @@ export class AppComponent
 		console.log('Requesting URL...');
 		console.log(this.uploadForm.value);
 
-		this.ApiSrv.getSignedUrl$().subscribe(
+		this.ApiSrv.getUploadSignedUrl$().subscribe(
 			result =>
 			{
 				console.log(result);
@@ -57,16 +88,6 @@ export class AppComponent
 				const imageFormData = new FormData();
 
 				const originalFile = this.uploadForm.get('imageSource').value;
-
-				const blob = originalFile.slice(0, originalFile.size, 'image/png');
-
-				const uploadableFile = new File(
-					[blob],
-					`${result.photoFilename}.png`,
-					{
-						type: 'image/png'
-					}
-				);
 
 				imageFormData.append('file', originalFile);
 

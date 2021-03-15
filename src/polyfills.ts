@@ -19,6 +19,10 @@
  */
 
 /**
+ * Polyfill for using aws-sdk in TS2 (angular)
+ */
+(window as any).global = window;
+/**
  * IE11 requires the following for NgClass support on SVG elements
  */
 // import 'classlist.js';  // Run `npm install --save classlist.js`.

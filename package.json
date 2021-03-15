@@ -19,12 +19,16 @@
     "@angular/platform-browser": "~11.2.4",
     "@angular/platform-browser-dynamic": "~11.2.4",
     "@angular/router": "~11.2.4",
-    "amazon-cognito-identity-js": "^4.5.12",
+    "@types/lodash": "^4.14.168",
     "aws-sdk": "^2.863.0",
     "bootstrap": "^4.6.0",
+    "lodash": "^4.17.21",
     "ngx-bootstrap": "^6.2.0",
     "rxjs": "~6.6.0",
+    "stream": "0.0.2",
+    "timers": "^0.1.1",
     "tslib": "^2.0.0",
+    "xml2js": "^0.4.23",
     "zone.js": "~0.11.3"
   },
   "devDependencies": {
