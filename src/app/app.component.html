@@ -22,8 +22,19 @@
 			</h1>
 
 			<p class="lead text-muted">
-				Voer links uw gegevens in, en rechts het bestand. Indien u de status van uw huidige uploads wil bekijken, moet u uw gegevens invoeren & de knop 'ophalen' indrukken.
+				On the left, you can authenticate yourself using your email-address and a code of choice.
+				<br>
+				Once authenticated, you can choose to upload a file, (click browse... -> select a file -> upload),
+				or view the status of your requested thumbnails.
+				<br>
+				Once a thumbnail is generated, you will receive an email and they will be available for download for 7 days.
 			</p>
+
+			<div class="w-50">
+				<img src="../assets/Venus.jpg" alt="Normal image" width="50%" height="50%">
+				<img src="../assets/arrow.png" alt="arrow" width="80px">
+				<img src="../assets/Venus.jpg" alt="resized image" width="25%" height="25%">
+			</div>
 
 			<form [formGroup]="uploadForm" (ngSubmit)="onFileUpload()">
 
