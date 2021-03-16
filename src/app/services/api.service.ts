@@ -81,9 +81,6 @@ export class ApiService {
 
 	uploadFileToSignedUrl$(signedUrl: IUploadUrl, file: File): Observable<any>
 	{
-		console.log(file);
-		console.log(signedUrl);
-
 		return this.HttpSrv.put<any>(
 			`${signedUrl.uploadURL}`, file,
 			{
@@ -95,6 +92,5 @@ export class ApiService {
 					}
 			}
 		);
-
 	}
 }
