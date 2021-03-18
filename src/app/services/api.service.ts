@@ -9,6 +9,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { IUploadUrl } from '../models/API/uploadurl.model';
 import { IListUrl } from '../models/API/listurl.model';
+import {ISignedUrl} from '../models/API/signed_url.model';
 
 @Injectable(
 	{
@@ -22,16 +23,36 @@ export class ApiService {
 
 	}
 
-	getUploadSignedUrl$(): Observable<IUploadUrl>
+	getUploadSignedUrl$(mail: string, code: string): Observable<IUploadUrl>
 	{
-		return this.HttpSrv.get<IUploadUrl>(`${Env.ApiGatewayUrl}/uploadUrl`);
+		return this.HttpSrv.get<IUploadUrl>(
+			`${Env.ApiGatewayUrl}/uploadUrl?email=${mail}&code=${code}`
+		);
 	}
 
 	getListSignedUrl$(): Observable<IListUrl>
 	{
-		return this.HttpSrv.get<IListUrl>(`${Env.ApiGatewayUrl}/listUrl`);
+		return this.HttpSrv.get<IListUrl>(`${Env.ApiGatewayUrl}/getOwnedObjects`);
 	}
 
+	getOwnedObjectsSignedUrls$(): Observable<ISignedUrl[]>
+	{
+		return this.HttpSrv.get<ISignedUrl[]>(`${Env.ApiGatewayUrl}/listUrl`);
+	}
+
+	getObject$(signedUrl: ISignedUrl): Observable<any>
+	{
+		return this.HttpSrv.get<any>(
+			`${signedUrl.url}`,
+			{
+				headers:
+					{
+						'Bucket': 'thumbgen-uploads',
+					}
+			}
+		);
+
+	}
 	listObjects$(signedUrl: IListUrl): Observable<any>
 	{
 		return this.HttpSrv.get<IListUrl>(
@@ -79,7 +100,7 @@ export class ApiService {
 		);
 	}
 
-	uploadFileToSignedUrl$(signedUrl: IUploadUrl, file: File): Observable<any>
+	uploadFileToSignedUrl$(signedUrl: IUploadUrl, file: File, userHash: string): Observable<any>
 	{
 		return this.HttpSrv.put<any>(
 			`${signedUrl.uploadURL}`, file,
@@ -88,7 +109,8 @@ export class ApiService {
 					{
 						'Bucket': 'thumbgen-uploads',
 						'Content-Type': 'image/png',
-						'Key': `${signedUrl.photoFilename}.png`
+						'Key': `${signedUrl.photoFilename}.png`,
+						'x-amz-meta-hash': userHash
 					}
 			}
 		);
