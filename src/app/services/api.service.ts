@@ -32,12 +32,12 @@ export class ApiService {
 
 	getListSignedUrl$(): Observable<IListUrl>
 	{
-		return this.HttpSrv.get<IListUrl>(`${Env.ApiGatewayUrl}/getOwnedObjects`);
+		return this.HttpSrv.get<IListUrl>(`${Env.ApiGatewayUrl}/thumbnails/ownedObjects`);
 	}
 
 	getOwnedObjectsSignedUrls$(): Observable<ISignedUrl[]>
 	{
-		return this.HttpSrv.get<ISignedUrl[]>(`${Env.ApiGatewayUrl}/listUrl`);
+		return this.HttpSrv.get<ISignedUrl[]>(`${Env.ApiGatewayUrl}/thumbnails/ownedObjects`);
 	}
 
 	getObject$(signedUrl: ISignedUrl): Observable<any>
@@ -48,7 +48,8 @@ export class ApiService {
 				headers:
 					{
 						'Bucket': 'thumbgen-uploads',
-					}
+					},
+				responseType: 'blob' as 'json',
 			}
 		);
 

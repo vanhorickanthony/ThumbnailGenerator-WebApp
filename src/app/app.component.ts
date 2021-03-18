@@ -8,6 +8,10 @@ import { ApiService } from './services/api.service';
 
 import { IBucketList } from './models/API/bucket_list.model';
 import {FaIconComponent} from '@fortawesome/angular-fontawesome';
+import {IRequestState} from './models/internal/thumbnailrequest.state.model';
+
+import { Observable, forkJoin } from 'rxjs';
+import {ISignedUrl} from './models/API/signed_url.model';
 
 @Component(
 	{
@@ -27,7 +31,11 @@ export class AppComponent
 	@ViewChild('syncStatus') syncStatus: FaIconComponent;
 	@ViewChild('syncButton') syncButton: ElementRef;
 
-	thumbnailList: IBucketList = null;
+	/**
+	 * Album state
+	 */
+
+	thumbnailList: ISignedUrl[];
 
 	/**
 	 * FontAwesome icons
@@ -50,24 +58,23 @@ export class AppComponent
 
 	requestedThumbnailData: boolean = false;
 
+	requestState: IRequestState =
+		{
+			authenticated: false,
+
+			requestInProgress: false,
+
+			requestSuccessful: false,
+			requestFailed: false,
+
+			urlListReceived: false,
+			objectListReceived: false,
+		}
+
 	constructor(private ApiSrv: ApiService, private FB: FormBuilder)
 	{
-		this.ApiSrv.getOwnedObjectsSignedUrls$().subscribe(
-			signedUrlList =>
-			{
-				console.log(signedUrlList);
+		this.thumbnailList = [];
 
-				for (let signedUrl of signedUrlList)
-				{
-					this.ApiSrv.getObject$(signedUrl).subscribe(
-						s3object =>
-						{
-							console.log(s3object);
-						}
-					)
-				}
-			}
-		);
 		/*
 		this.ApiSrv.getListSignedUrl$().subscribe(
 			signedUrl =>
@@ -99,16 +106,43 @@ export class AppComponent
 		 */
 	}
 
+	public checkAuthentication(): void
+	{
+		if (this.uploadForm.get('email').valid && this.uploadForm.get('code').valid)
+		{
+			this.requestState.authenticated = true;
+		}
+	}
+
 	public syncThumbnails(): void
 	{
 		console.log("Syncing thumbnails...");
 
-		this.setSyncActive();
+		this.checkAuthentication();
 
-		setTimeout( () =>
+		if (this.requestState.authenticated)
 		{
-			this.setSyncInactive();
-		}, 1000);
+			this.setSyncActive();
+
+			this.requestState.requestInProgress = true;
+
+			this.ApiSrv.getOwnedObjectsSignedUrls$().subscribe(
+				signedUrlList =>
+				{
+					this.requestState.urlListReceived = true;
+
+					this.thumbnailList = signedUrlList;
+
+					this.requestState.requestSuccessful = true;
+
+					this.requestState.objectListReceived = true;
+
+					this.requestState.requestInProgress = false;
+
+					this.setSyncInactive()
+				}
+			);
+		}
 	}
 
 	public setSyncActive(): void
