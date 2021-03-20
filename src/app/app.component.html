@@ -146,23 +146,37 @@
 
 									<img
 										class="card-img-top"
-										data-src="holder.js/100px225?theme=thumb&amp;bg=55595c&amp;fg=eceeef&amp;text=Thumbnail"
 										alt="Thumbnail [100%x225]"
-										style="height: 225px; width: 100%; display: block;"
-										[src]="thumbnail.url"
+										style="height: 225px; width: 100%; display: block; object-fit: contain"
+										[src]="thumbnailList[cardIdx].url"
 									>
 
 									<div class="card-body">
 
 										<p class="card-text">
-											{{ thumbnail.key }}
+											{{ thumbnailList[cardIdx].key }}
 										</p>
 
 										<div class="d-flex justify-content-between align-items-center">
 
 											<div class="btn-group">
-												<button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-												<button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+
+												<button type="button" class="btn btn-sm btn-info btn-outline-secondary text-white" (click)="openImage(thumbnailList[cardIdx].url)">
+													View
+												</button>
+
+												<button type="button" class="btn btn-sm btn-primary btn-outline-secondary text-white" (click)="downloadImage(thumbnailList[cardIdx])">
+													Download
+												</button>
+
+												<button
+													type="button"
+													class="btn btn-sm btn-outline-secondary text-black-50 {{ thumbnailList[cardIdx].isProcessed? 'btn-primary': 'btn-danger'}}"
+													disabled
+												>
+													Status: {{ thumbnailList[cardIdx].isProcessed? 'ready': 'not ready'}}
+												</button>
+
 											</div>
 
 											<small class="text-muted">

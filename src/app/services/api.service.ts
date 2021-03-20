@@ -35,9 +35,9 @@ export class ApiService {
 		return this.HttpSrv.get<IListUrl>(`${Env.ApiGatewayUrl}/thumbnails/ownedObjects`);
 	}
 
-	getOwnedObjectsSignedUrls$(): Observable<ISignedUrl[]>
+	getOwnedObjectsSignedUrls$(email: string, code: string): Observable<ISignedUrl[]>
 	{
-		return this.HttpSrv.get<ISignedUrl[]>(`${Env.ApiGatewayUrl}/thumbnails/ownedObjects`);
+		return this.HttpSrv.get<ISignedUrl[]>(`${Env.ApiGatewayUrl}/thumbnails/ownedObjects?email=${email}&code=${code}`);
 	}
 
 	getObject$(signedUrl: ISignedUrl): Observable<any>

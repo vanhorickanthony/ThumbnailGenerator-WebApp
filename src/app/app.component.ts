@@ -49,8 +49,8 @@ export class AppComponent
 
 	uploadForm = this.FB.group(
 		{
-			email: ['', Validators.required],
-			code: ['', Validators.required],
+			email: ['vanhorickanthony@gmail.com', Validators.required],
+			code: ['1234', Validators.required],
 			image: ['', Validators.required],
 			imageSource: [''],
 		}
@@ -126,7 +126,10 @@ export class AppComponent
 
 			this.requestState.requestInProgress = true;
 
-			this.ApiSrv.getOwnedObjectsSignedUrls$().subscribe(
+			this.ApiSrv.getOwnedObjectsSignedUrls$(
+				this.uploadForm.get('email').value,
+				this.uploadForm.get('code').value,
+			).subscribe(
 				signedUrlList =>
 				{
 					this.requestState.urlListReceived = true;
@@ -204,5 +207,25 @@ export class AppComponent
 				);
 			}
 		);
+	}
+
+	public openImage(url: string): void
+	{
+		window.open(url, '_blank');
+	}
+
+	public downloadImage(url: ISignedUrl): void
+	{
+		this.ApiSrv.getObject$(url).subscribe(
+			result =>
+			{
+
+				console.info(result);
+
+				let url = window.URL.createObjectURL(result);
+
+				window.open(url);
+			}
+		)
 	}
 }
