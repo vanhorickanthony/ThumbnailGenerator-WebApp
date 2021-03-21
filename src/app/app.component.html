@@ -45,6 +45,28 @@
 								formControlName="code"
 							>
 
+							<label for="slackForm">
+								Slack:
+							</label>
+							<div class="input-group" id="slackForm">
+
+								<div class="input-group-prepend">
+
+									<span class="input-group-text" id="">
+										Webhook
+									</span>
+
+								</div>
+
+								<input
+									class="form-control"
+									id="slackForm_url"
+									type="url"
+									formControlName="slack_webhook"
+								>
+
+							</div>
+
 						</div>
 
 					</div>
@@ -59,6 +81,7 @@
 									<button
 										class="btn btn-primary btn-sm"
 										type="submit"
+										#imageUploadButton
 									>
 										Upload!
 									</button>

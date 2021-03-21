@@ -23,16 +23,11 @@ export class ApiService {
 
 	}
 
-	getUploadSignedUrl$(mail: string, code: string): Observable<IUploadUrl>
+	getUploadSignedUrl$(mail: string, code: string, slack_webhook?: string): Observable<IUploadUrl>
 	{
 		return this.HttpSrv.get<IUploadUrl>(
-			`${Env.ApiGatewayUrl}/uploadUrl?email=${mail}&code=${code}`
+			`${Env.ApiGatewayUrl}/uploadUrl?email=${mail}&code=${code}&slack_webhook=${slack_webhook}`
 		);
-	}
-
-	getListSignedUrl$(): Observable<IListUrl>
-	{
-		return this.HttpSrv.get<IListUrl>(`${Env.ApiGatewayUrl}/thumbnails/ownedObjects`);
 	}
 
 	getOwnedObjectsSignedUrls$(email: string, code: string): Observable<ISignedUrl[]>
@@ -54,54 +49,8 @@ export class ApiService {
 		);
 
 	}
-	listObjects$(signedUrl: IListUrl): Observable<any>
-	{
-		return this.HttpSrv.get<IListUrl>(
-			`${signedUrl.signedUrl}`,
-			{
-				headers:
-					{
-						key: signedUrl.key,
-					},
-				responseType: 'text' as 'json',
-			}
-		).pipe(
-			map(
-				xmlResponse => {
-					const parser: xml2js.Parser = new xml2js.Parser();
 
-					let error;
-					let result;
-
-					parser.parseString(
-						xmlResponse,
-						(err, res) => {
-							if (err)
-							{
-								console.log(
-									{
-										status: 'error',
-										result: err,
-									}
-								)
-								error = err;
-							}
-							else if (res)
-							{
-								console.log(res);
-
-								result = res;
-							}
-						}
-					);
-
-					return error? error : result;
-				}
-			)
-		);
-	}
-
-	uploadFileToSignedUrl$(signedUrl: IUploadUrl, file: File, userHash: string): Observable<any>
+	uploadFileToSignedUrl$(signedUrl: IUploadUrl, file: File, userHash: string, slack_webhook?: string): Observable<any>
 	{
 		return this.HttpSrv.put<any>(
 			`${signedUrl.uploadURL}`, file,
@@ -111,7 +60,8 @@ export class ApiService {
 						'Bucket': 'thumbgen-uploads',
 						'Content-Type': 'image/png',
 						'Key': `${signedUrl.photoFilename}.png`,
-						'x-amz-meta-hash': userHash
+						'x-amz-meta-hash': userHash,
+						'x-amz-meta-slack_webhook': slack_webhook? slack_webhook: '',
 					}
 			}
 		);

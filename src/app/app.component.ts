@@ -27,9 +27,12 @@ export class AppComponent
 
 	title = 'ThumbnailGen';
 
+	@ViewChild('imageUploadButton') imageUploadButton: ElementRef;
 	@ViewChild('imageUploadLabel') imageUploadLabel: ElementRef;
+
 	@ViewChild('syncStatus') syncStatus: FaIconComponent;
 	@ViewChild('syncButton') syncButton: ElementRef;
+
 
 	/**
 	 * Album state
@@ -49,10 +52,11 @@ export class AppComponent
 
 	uploadForm = this.FB.group(
 		{
-			email: ['vanhorickanthony@gmail.com', Validators.required],
-			code: ['1234', Validators.required],
+			email: ['', Validators.required],
+			code: ['', Validators.required],
+			slack_webhook: [''],
 			image: ['', Validators.required],
-			imageSource: [''],
+			imageSource: ['', Validators.required],
 		}
 	);
 
@@ -74,44 +78,23 @@ export class AppComponent
 	constructor(private ApiSrv: ApiService, private FB: FormBuilder)
 	{
 		this.thumbnailList = [];
-
-		/*
-		this.ApiSrv.getListSignedUrl$().subscribe(
-			signedUrl =>
-			{
-				console.log(
-					{
-						msg: 'Successfully retrieved signed URL for listing.',
-						result: signedUrl,
-					}
-				)
-
-				this.ApiSrv.listObjects$(signedUrl).subscribe(
-					objectList =>
-					{
-						console.log(
-							{
-								msg: 'Successfully retrieved objects.',
-								result: objectList.ListBucketResult,
-							}
-						)
-
-						this.thumbnailList = objectList.ListBucketResult;
-					}
-				)
-
-			}
-		)
-
-		 */
 	}
 
 	public checkAuthentication(): void
 	{
-		if (this.uploadForm.get('email').valid && this.uploadForm.get('code').valid)
+		if (this.uploadForm.get('email').value != '' &&
+			this.uploadForm.get('code').value !== '' &&
+			this.uploadForm.get('email').valid &&
+			this.uploadForm.get('code').valid)
 		{
 			this.requestState.authenticated = true;
 		}
+	}
+
+	public checkFileState(): boolean
+	{
+		return this.uploadForm.get('imageSource').valid;
+
 	}
 
 	public syncThumbnails(): void
@@ -146,6 +129,17 @@ export class AppComponent
 				}
 			);
 		}
+	}
+
+	public lockUpload(): void
+	{
+		this.imageUploadButton.nativeElement.disabled = true;
+	}
+
+	public unlockUpload(): void
+	{
+		this.imageUploadButton.nativeElement.disabled = false;
+
 	}
 
 	public setSyncActive(): void
@@ -187,26 +181,37 @@ export class AppComponent
 		console.log('Requesting URL...');
 		console.log(this.uploadForm.value);
 
-		this.ApiSrv.getUploadSignedUrl$(this.uploadForm.get('email').value, this.uploadForm.get('code').value).subscribe(
-			result =>
-			{
-				console.log(result);
-				console.log(Date.now());
+		this.checkAuthentication();
 
-				const imageFormData = new FormData();
+		if (this.requestState.authenticated && this.checkFileState())
+		{
+			this.lockUpload();
 
-				const originalFile = this.uploadForm.get('imageSource').value;
+			this.ApiSrv.getUploadSignedUrl$(
+				this.uploadForm.get('email').value,
+				this.uploadForm.get('code').value,
+				this.uploadForm.get('slack_webhook').value,
+			).subscribe(
+				result =>
+				{
 
-				imageFormData.append('file', originalFile);
+					const imageFormData = new FormData();
 
-				this.ApiSrv.uploadFileToSignedUrl$(result, originalFile, result.hash).subscribe(
-					uploadResponse =>
-					{
-						console.log(uploadResponse);
-					}
-				);
-			}
-		);
+					const originalFile = this.uploadForm.get('imageSource').value;
+
+					imageFormData.append('file', originalFile);
+
+					this.ApiSrv.uploadFileToSignedUrl$(result, originalFile, result.hash).subscribe(
+						uploadResponse =>
+						{
+							console.log(uploadResponse);
+
+							this.unlockUpload();
+						}
+					);
+				}
+			);
+		}
 	}
 
 	public openImage(url: string): void
