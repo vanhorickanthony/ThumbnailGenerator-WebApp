@@ -159,20 +159,30 @@
 
 				<ng-container *ngFor="let thumbnail of thumbnailList; let idx = index;">
 
-					<div class="row" *ngIf="idx%3 === 0">
 
-						<ng-container *ngFor="let cardIdx of lodash.range(idx, lodash.min([thumbnailList.length, idx + 3]), 1)">
+					 <div class="row" *ngIf="idx%2 === 0">
+						<ng-container *ngFor="let cardIdx of lodash.range(idx, lodash.min([thumbnailList.length, idx + 2]), 1)">
+                         <div *ngIf="!thumbnailList[cardIdx].isProcessed">
+							<div class="{{ CheckFileExist(thumbnailList[cardIdx].key)? 'col-md-6': 'col-md-4'}}">
 
-							<div class="col-md-4">
-
-								<div class="card mb-4 box-shadow">
-
-									<img
-										class="card-img-top"
-										alt="Thumbnail [100%x225]"
-										style="height: 225px; width: 100%; display: block; object-fit: contain"
+								<div class="{{ CheckFileExist(thumbnailList[cardIdx].key)? 'card mb-6': 'card mb-4'}} box-shadow">
+										<img
+										alt="Thumbnail [100%x200]"
+										style="height: 200px; width: 100%;object-fit: contain;"
 										[src]="thumbnailList[cardIdx].url"
 									>
+
+									<div *ngIf="CheckFileExist(thumbnailList[cardIdx].key)">
+									<img src="../assets/arrow.png"
+										 alt="Arrow"
+										 height="50" width="50" style="margin-left:45%;object-fit: contain"/>
+
+										<img
+											alt="Thumbnail GENERATED [50%x125]"
+											style="height: 125px;width: 50%;margin-left:25%;object-fit: contain;"
+											[src]="FindLink(thumbnailList[cardIdx].key)"
+										>
+									</div>
 
 									<div class="card-body">
 
@@ -184,40 +194,37 @@
 
 											<div class="btn-group">
 
-												<button type="button" class="btn btn-sm btn-info btn-outline-secondary text-white" (click)="openImage(thumbnailList[cardIdx].url)">
+												<button type="button" class="btn btn-sm {{ CheckFileExist(thumbnailList[cardIdx].key)? 'btn-info': 'btn-secondary'}} btn-outline-secondary text-white" (click)="openImage(FindLink(thumbnailList[cardIdx].key))">
 													View
 												</button>
 
-												<button type="button" class="btn btn-sm btn-primary btn-outline-secondary text-white" (click)="downloadImage(thumbnailList[cardIdx])">
+												<button type="button" class="btn btn-sm {{ CheckFileExist(thumbnailList[cardIdx].key)? 'btn-primary': 'btn-secondary'}} btn-outline-secondary text-white" (click)="downloadImage(FindLink(thumbnailList[cardIdx].key))">
 													Download
 												</button>
 
 												<button
 													type="button"
-													class="btn btn-sm btn-outline-secondary text-black-50 {{ thumbnailList[cardIdx].isProcessed? 'btn-primary': 'btn-danger'}}"
+													class="btn btn-sm btn-outline-secondary text-black-50 {{ CheckFileExist(thumbnailList[cardIdx].key)? 'btn-primary': 'btn-danger'}}"
 													disabled
 												>
-													Status: {{ thumbnailList[cardIdx].isProcessed? 'ready': 'not ready'}}
+													Status: {{ CheckFileExist(thumbnailList[cardIdx].key)? 'ready': 'not ready'}}
 												</button>
 
 											</div>
 
 											<small class="text-muted">
-												{{ cardIdx + 1 }} | {{ thumbnailList.length }}
+												{{ cardIdx + 1 }}
 											</small>
 
 										</div>
 
 									</div>
-
 								</div>
-
+								</div>
 							</div>
 
 						</ng-container>
-
-					</div>
-
+		            	</div>
 				</ng-container>
 
 			</div>

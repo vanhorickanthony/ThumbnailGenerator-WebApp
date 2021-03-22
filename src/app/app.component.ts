@@ -80,6 +80,26 @@ export class AppComponent
 		this.thumbnailList = [];
 	}
 
+     public CheckFileExist(r):boolean{
+		 for(var ii = 0; ii < this.thumbnailList.length; ii++){
+		 	if (this.thumbnailList[ii].key == r.slice(0,-4)+".jpg"){
+		 		return true;
+			}
+		 }
+      return false;
+	 }
+
+	 public FindLink(r): string {
+		 const originalDatestamp = r.replace(/\D/g,'');
+		for(let t of this.thumbnailList){
+      	const newDatestamp = t.key.replace(/\D/g,'');
+      	if ((originalDatestamp == newDatestamp) && t.isProcessed){
+			return t.url;
+		 }
+		}
+		 return "#";
+	 }
+
 	public checkAuthentication(): void
 	{
 		if (this.uploadForm.get('email').value != '' &&
