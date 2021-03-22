@@ -159,11 +159,9 @@
 
 				<ng-container *ngFor="let thumbnail of thumbnailList; let idx = index;">
 
-
 					 <div class="row" *ngIf="idx%2 === 0">
 						<ng-container *ngFor="let cardIdx of lodash.range(idx, lodash.min([thumbnailList.length, idx + 2]), 1)">
-                         <div *ngIf="!thumbnailList[cardIdx].isProcessed">
-							<div class="{{ CheckFileExist(thumbnailList[cardIdx].key)? 'col-md-6': 'col-md-4'}}">
+							<div *ngIf="!thumbnailList[cardIdx].isProcessed" class="{{ CheckFileExist(thumbnailList[cardIdx].key)? 'col-md-6': 'col-md-4'}}">
 
 								<div class="{{ CheckFileExist(thumbnailList[cardIdx].key)? 'card mb-6': 'card mb-4'}} box-shadow">
 										<img
@@ -219,7 +217,6 @@
 										</div>
 
 									</div>
-								</div>
 								</div>
 							</div>
 
